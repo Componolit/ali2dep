@@ -44,4 +44,4 @@ obj/generated/sdefault.adb:
 	@mv $(OBJ_DIR)/tmp-sdefault.adb $@
 
 clean:
-	@rm -rf $(OBJ_DIR)
+	@rm -rf $(OBJ_DIR) ali2dep
