@@ -6,10 +6,16 @@ ADA_RTL_OBJ_DIR		?= /dummy
 target_noncanonical	?= /dummy
 libsubdir				?= /dummy
 
+ifneq ($(MAKECMDGOALS),clean)
+ifeq ($(CONTRIB_DIR),)
+$(error Please set CONTRIB_DIR to your <gcc_source>/gcc/gcc/ada directory)
+endif
+endif
+
 DUMMY := $(shell mkdir -p $(OBJ_DIR)/generated)
 
 all: obj/generated/sdefault.adb
-	@gprbuild -P build
+	@gprbuild -XCONTRIB_DIR=$(CONTRIB_DIR) -P build/build
 
 obj/generated/sdefault.adb:
 	$(ECHO) "pragma Style_Checks (Off);"											>  $(OBJ_DIR)/tmp-sdefault.adb

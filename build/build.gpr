@@ -1,0 +1,21 @@
+project Build
+is
+   Contrib := external ("CONTRIB_DIR", "");
+
+   for Create_Missing_Dirs use "True";
+   for Source_Dirs use ("../src", "../obj/generated") & Contrib;
+   for Object_Dir use "../obj";
+   for Main use ("main.adb");
+   for Languages use ("Ada", "C");
+
+   for Source_List_File use "sources.txt";
+
+   package Builder is
+      for Executable ("main.adb") use "ali2dep";
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-gnatwI");
+   end Compiler;
+
+end Build;
