@@ -39,6 +39,29 @@ package body ALI2Dep is
       return Contents;
    end Read_File;
 
+   ----------
+   -- Find --
+   ----------
+
+   function Find (File : String) return String
+   is
+      use Ada.Command_Line;
+      use Ada.Directories;
+   begin
+      for A in 1 .. Argument_Count - 1
+      loop
+         declare
+            P : constant String := Argument (A) & "/" & File;
+         begin
+            if Exists (P)
+            then
+               return P;
+            end if;
+         end;
+      end loop;
+      raise File_Not_Found with "File " & File & " not found";
+   end Find;
+
    ----------------
    -- Handle_ALI --
    ----------------
@@ -46,6 +69,7 @@ package body ALI2Dep is
    procedure Handle_ALIs
    is
       use Ada.Command_Line;
+      use type Namet.File_Name_Type;
       ALI_Id : ALI.ALI_Id;
       Path   : String := Argument (Argument_Count);
       Name   : Namet.File_Name_Type := Namet.Name_Enter (Path);
@@ -66,44 +90,27 @@ package body ALI2Dep is
       -- Iterate over all units
       declare
          A : ALI.ALIs_Record := ALI.ALIs.Table (ALI_Id);
+         D : ALI.SDep_Record;
          D_File : constant String := Path (Path'First .. Path'Last - 3) & "d";
+         Output : File_Type;
       begin
-
-         Put_Line (D_File & ": " & Namet.Get_Name_String (A.Sfile));
-         Put (Namet.Get_Name_String (A.Sfile) & ":");
+         Create (Output, Out_File, D_File);
+         Put_Line (Output, Find (D_File) & ": " & Find (Namet.Get_Name_String (A.Sfile)));
+         Put_Line (Output, Find (Namet.Get_Name_String (A.Sfile)) & ": \");
          for Dep in A.First_Sdep .. A.Last_Sdep
          loop
-            declare
-               Found : Boolean := False;
-               D : ALI.SDep_Record := ALI.Sdep.Table (Dep);
-               F : constant String := Namet.Get_Name_String (D.Sfile);
-               use type Namet.File_Name_Type;
-               use Ada.Command_Line;
-               use Ada.Directories;
-            begin
-               if not D.Dummy_Entry and A.Sfile /= D.Sfile
-               then
-                  for A in 1 .. Argument_Count - 1
-                  loop
-                     declare
-                        P : constant String := Argument (A) & "/" & F;
-                     begin
-                        if Exists (P)
-                        then
-                           Put (" " & P);
-                           Found := True;
-                           exit;
-                        end if;
-                     end;
-                  end loop;
-                  if not Found
-                  then
-                     raise File_Not_Found with "File " & F & " not found";
-                  end if;
-               end if;
-            end;
+            D := ALI.Sdep.Table (Dep);
+            if not D.Dummy_Entry and A.Sfile /= D.Sfile
+            then
+               declare
+                  File : constant String := Namet.Get_Name_String (D.Sfile);
+                  Path : constant String := Find (File);
+               begin
+                  Put_Line (Output, "    " & Path & " \");
+               end;
+            end if;
          end loop;
-         New_Line;
+         New_Line (Output);
       end;
 
    end Handle_ALIs;
