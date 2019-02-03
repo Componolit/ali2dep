@@ -11,7 +11,8 @@
 
 package ALI2Dep
 is
-   procedure Handle_ALI (Path : String);
+   procedure Handle_ALIs;
 
    Invalid_ALI_File : exception;
+   File_Not_Found   : exception;
 end ALI2Dep;
