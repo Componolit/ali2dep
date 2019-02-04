@@ -48,6 +48,11 @@ package body ALI2Dep is
       use Ada.Command_Line;
       use Ada.Directories;
    begin
+      if File(File'First) = '/'
+      then
+         return File;
+      end if;
+
       for A in 1 .. Argument_Count - 1
       loop
          declare
