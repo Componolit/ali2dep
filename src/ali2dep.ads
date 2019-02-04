@@ -11,6 +11,8 @@
 
 package ALI2Dep
 is
+   Version : constant String := "0.1";
+
    procedure Handle_ALIs;
 
    Invalid_ALI_File : exception;

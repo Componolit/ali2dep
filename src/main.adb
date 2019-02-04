@@ -10,10 +10,18 @@
 --
 
 with Ada.Command_Line;
+with Ada.Text_IO;
 with ALI2Dep;
 
 procedure Main
 is
 begin
+   if Ada.Command_Line.Argument_Count = 0
+   then
+      Ada.Text_IO.Put_Line ("ali2dep (version " & ALI2Dep.Version & ")");
+      Ada.Command_Line.Set_Exit_Status (1);
+      return;
+   end if;
+
    ALI2Dep.Handle_ALIs;
 end Main;
